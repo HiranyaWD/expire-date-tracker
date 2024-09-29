@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Before</title>
+    <link rel="icon" type="image/png" href="img/SELL.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="product-detail.js" defer></script>
+</head>
+
+<body>
+  <section id="header">
+    <a href="#"><img class="logo" src="img/SELL.png"></a>
+    <div>
+        <ul id="navbar" class="navbar">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="add-product.html">Add Products</a></li>
+            <li class="notification"><a href="index.html"><i class="fa-sharp fa-solid fa-bell"></i><span class="badge">+1</span></a></li>
+        </ul>
+    </div>
+</section>
+    <h2>Product Details</h2>
+
+    <div class="container">
+        <div class="form-container">
+            <div class="image-container">
+                <div class="image-box">
+                    <img id="productImage" src="https://placehold.co/200x200" alt="Product Image">
+                </div>
+            </div>
+            <div class="form-fields">
+                <p><strong>Name:</strong> <span id="productName"></span></p>
+                <p><strong>Quantity:</strong> <span id="productQuantity"></span></p>
+                <p><strong>Expiration Date:</strong> <span id="productExpiry"></span></p>
+                <p><strong>20 Days More to Expiry</strong> </p>
+                <p><strong>Barcode:</strong> <span id="productBarcode"></span></p>
+
+                <button id="deleteProductButton" class="submit-button">Delete Product</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load products from localStorage
+        function loadProducts() {
+            return JSON.parse(localStorage.getItem('products')) || [];
+        }
+
+        // Save updated product list to localStorage
+        function saveProducts(products) {
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+
+        // Get the product ID from the URL
+        function getProductId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        // Display the product details
+        function displayProductDetails() {
+            const productId = getProductId();
+            const products = loadProducts();
+            const product = products.find(p => p.id == productId); // Find the product by ID
+
+            if (!product) {
+                alert('Product not found!');
+                return;
+            }
+
+            // Display product details
+            document.getElementById('productName').textContent = product.name;
+            document.getElementById('productQuantity').textContent = product.quantity;
+            document.getElementById('productExpiry').textContent = product.expiry;
+            document.getElementById('productBarcode').textContent = product.barcode;
+            document.getElementById('productImage').src = product.image || 'https://placehold.co/200x200';
+        }
+
+        // Delete the product from localStorage
+        function deleteProduct() {
+            const productId = getProductId();
+            let products = loadProducts();
+
+            // Filter out the product to be deleted
+            products = products.filter(product => product.id != productId);
+
+            // Save the updated list back to localStorage
+            saveProducts(products);
+
+            // Notify the user and redirect to the home page
+            alert('Product deleted successfully!');
+            window.location.href = 'index.html';
+        }
+
+        // Run this function when the page loads
+        window.onload = function () {
+            displayProductDetails();
+
+            // Attach the delete function to the delete button
+            document.getElementById('deleteProductButton').addEventListener('click', deleteProduct);
+        };
+    </script>
+</body>
+
+</html>

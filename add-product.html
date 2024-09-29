@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Before</title>
+    <link rel="icon" type="image/png" href="img/SELL.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <section id="header">
+        <a href="#"><img class="logo" src="img/SELL.png"></a>
+        <div>
+            <ul id="navbar" class="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="add-product.html" class="active">Add Products</a></li>
+                
+            </ul>
+        </div>
+    </section>
+
+    <h2 class="title">Add Product</h2>
+    <div class="container">
+        
+    
+                      
+        <div class="form-container">
+            <div class="image-container">
+                <label class="image-upload-label">
+                    <div class="image-box">
+                        <img src="https://placehold.co/200x200" alt="Product" class="product-image">
+                    </div>
+                    <input type="file" id="file-upload" accept="image/*" onchange="previewImage(event)">
+                </label>
+            </div>
+            
+            <div class="form-fields">
+                <div class="input-group">
+                    <label class="label">Product Name</label>
+                    <input type="text" id="productName" class="input" placeholder="Enter product name" />
+                </div>
+                <div class="input-group">
+                    <label class="label">Quantity</label>
+                    <input type="number" id="productQuantity" class="input" placeholder="Enter quantity" />
+                </div>
+                <div class="input-group">
+                    <label class="label">Expiration Date</label>
+                    <input type="date" id="productExpiry" class="input" />
+                </div>
+                <div class="input-group">
+                    <label class="label">Product Barcode</label>
+                    <input type="text" id="productBarcode" class="input" placeholder="Enter barcode" />
+                </div>
+                <div id="countdown">
+
+                </div>
+                <button id="addProductButton" class="submit-button" onclick="addProduct()">Add Product</button>
+                <button id="editProductButton" class="submit-button" style="display:none;">Update Product</button>
+                <button id="deleteProductButton" class="submit-button" style="display:none;">Delete Product</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productIndex = urlParams.get('id');  // Get product ID from URL
+    
+        if (productIndex !== null) {
+            loadProductForEdit(productIndex);
+        }
+    
+        function loadProductForEdit(index) {
+            const products = loadProducts();
+            const product = products[index];
+    
+            // Load product data into the form
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productQuantity').value = product.quantity;
+            document.getElementById('productExpiry').value = product.expiry;
+            document.getElementById('productBarcode').value = product.barcode;
+            document.querySelector('.product-image').src = product.image || 'https://placehold.co/200x200';
+    
+            // Hide "Add" button and show "Update" & "Delete" buttons
+            document.getElementById('addProductButton').style.display = 'none';
+            document.getElementById('editProductButton').style.display = 'block';
+            document.getElementById('deleteProductButton').style.display = 'block';
+    
+            // Set the Update and Delete button functionality
+            document.getElementById('editProductButton').onclick = function() {
+                editProduct(index);
+            };
+            document.getElementById('deleteProductButton').onclick = function() {
+                deleteProduct(index);
+            };
+        }
+    
+        function editProduct(index) {
+            const products = loadProducts();
+            const name = document.getElementById('productName').value;
+            const quantity = document.getElementById('productQuantity').value;
+            const expiry = document.getElementById('productExpiry').value;
+            const barcode = document.getElementById('productBarcode').value;
+            const image = document.getElementById('file-upload').files[0];
+    
+            // Convert image to base64 if a new image is uploaded
+            if (image) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const updatedProduct = {
+                        name,
+                        quantity,
+                        expiry,
+                        barcode,
+                        image: e.target.result  // base64 encoded image
+                    };
+    
+                    products[index] = updatedProduct;
+                    saveProducts(products);
+                    alert('Product updated successfully!');
+                    window.location.href = 'index.html';  // Redirect to home
+                };
+                reader.readAsDataURL(image);
+            } else {
+                // If no new image, keep the existing image
+                const updatedProduct = {
+                    name,
+                    quantity,
+                    expiry,
+                    barcode,
+                    image: products[index].image
+                };
+                products[index] = updatedProduct;
+                saveProducts(products);
+                alert('Product updated successfully!');
+                window.location.href = 'index.html';  // Redirect to home
+            }
+        }
+    
+        function deleteProduct(index) {
+            const products = loadProducts();
+            products.splice(index, 1);  // Remove product
+            saveProducts(products);
+            alert('Product deleted successfully!');
+            window.location.href = 'index.html';  // Redirect to home
+        }
+    </script>
+</body>
+</html>  
